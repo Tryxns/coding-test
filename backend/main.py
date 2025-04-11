@@ -4,7 +4,15 @@ import uvicorn
 import json
 
 app = FastAPI()
+origins = ["*"]
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 # Load dummy data
 with open("dummyData.json", "r") as f:
     DUMMY_DATA = json.load(f)
@@ -15,6 +23,19 @@ def get_data():
     Returns dummy data (e.g., list of users).
     """
     return DUMMY_DATA
+
+@app.get("/api/sales-reps")
+def get_sales_reps(region: str = '', name: str = '', role: str = ''):
+    sales_reps = DUMMY_DATA.get('salesReps')
+    rs = sales_reps
+    if(name):
+        rs = [x for x in rs if name in x.get('name').lower()]
+    if(role):
+        rs = [x for x in rs if role in x.get('role').lower()]
+    if(region):
+        rs = [x for x in rs if x.get('region') == region]
+
+    return rs
 
 @app.post("/api/ai")
 async def ai_endpoint(request: Request):
