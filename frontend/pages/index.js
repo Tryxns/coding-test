@@ -17,6 +17,7 @@ export default function Home() {
 
   const [filterName, setFilterName] = useState("");
   const [filterRole, setFilterRole] = useState("");
+  const [filterRegion, setFilterRegion] = useState("");
 
   const searchName = (e) => {
     setFilterName(e.target.value)
@@ -97,9 +98,13 @@ export default function Home() {
 
   useEffect(() => {
     let url = "http://localhost:8000/api/sales-reps?";
-    if(filterName!="") url += 'name='+filterName.toLowerCase();
-    if(filterRole!="") url += '&role='+filterRole.toLowerCase();
-    console.log(url);
+    let filters = [];
+    if(filterName!="") filters.push('name='+filterName.toLowerCase());
+    if(filterRole!="") filters.push('role='+filterRole.toLowerCase());
+    if(filterRegion!="") filters.push('region='+filterRegion.toLowerCase());
+
+    if (filters.length > 0) url += filters.join('&');
+
     fetch(url)
       .then((res) => res.json())
       .then((data) => {
@@ -162,16 +167,18 @@ export default function Home() {
         }
         <SalesModal datamodal={dataModal}></SalesModal>
       </section>
-      <section>
+
+      <section className="mt-5">
         <h2>Ask a Question (AI Endpoint)</h2>
-        <div>
+        <div className="flex">
           <input
             type="text"
+            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
             placeholder="Enter your question..."
             value={question}
             onChange={(e) => setQuestion(e.target.value)}
           />
-          <button onClick={handleAskQuestion}>Ask</button>
+          <button className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 ml-2" onClick={handleAskQuestion}>Ask</button>
         </div>
         {answer && (
           <div style={{ marginTop: "1rem" }}>
